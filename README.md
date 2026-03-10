@@ -97,3 +97,12 @@ PORTAIL_BDD2/
 - Sessions Flask chiffrées
 - Toutes les routes protégées par `@login_required`
 - Requêtes SQL paramétrées (protection injection SQL)
+
+## Deployment Render (Docker)
+- Files added:
+  - Dockerfile
+  - .dockerignore
+  - render.yaml
+  - .env.example
+  - DEPLOY_RENDER.md
+- Full guide: DEPLOY_RENDER.md

@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from flask import Flask, redirect, url_for, send_from_directory
+from flask import Flask, redirect, url_for, send_from_directory, jsonify
 import config as cfg
 
 
@@ -37,5 +37,9 @@ def create_app():
     @app.route("/")
     def root():
         return redirect(url_for("dashboard.index"))
+
+    @app.route("/health")
+    def health():
+        return jsonify({"status": "ok"}), 200
 
     return app

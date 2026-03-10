@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: projet-bdd2
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ITEMS_PER_PAGE
+        value: "10"
+      - key: DB_DRIVER
+        value: "ODBC Driver 18 for SQL Server"
+      - key: DB_ENCRYPT
+        value: "yes"
+      - key: DB_TRUST_CERT
+        value: "no"
+      - key: DB_TIMEOUT
+        value: "30"
