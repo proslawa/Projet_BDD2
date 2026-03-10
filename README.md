@@ -1,108 +1,93 @@
-# 🎓 Portail Étudiant — Flask + SQL Server
+﻿# Projet BDD2 - Portail academique (Flask + SQL Server)
 
-Application web Flask connectée à la base `PROJET_BDD2` sur MS SQL Server.
+Application web de gestion academique developpee dans le cadre du projet BDD2.
+Le projet couvre l'authentification, la gestion des etudiants/enseignants, les inscriptions,
+les notes, les presences et l'emploi du temps.
+Application en ligne : https://projet-bdd2.onrender.com/auth/login
 
-## 📦 Installation
+## Auteur
+- Lawa Foumsou PROSPER
 
-### 1. Prérequis
-- Python 3.x
-- MS SQL Server 2025 Developer + SSMS
+## Objectifs
+- Centraliser la gestion academique dans une seule application.
+- Exploiter une base SQL Server relationnelle pour les operations metier.
+- Fournir une interface web simple pour les profils admin, enseignant et etudiant.
+
+## Fonctions principales
+- Authentification par email/mot de passe.
+- Tableau de bord par role.
+- Gestion des etudiants (liste, detail, CRUD, export Excel).
+- Gestion des enseignants (liste, detail, CRUD).
+- Gestion des inscriptions.
+- Saisie, consultation et releves de notes.
+- Gestion des seances et feuilles de presence.
+- Consultation de l'emploi du temps.
+
+## Dossiers et fichiers du projet
+- `app/` : coeur de l'application Flask.
+- `app/models/` : acces donnees et logique metier (auth, etudiants, enseignants, notes, presences, stats, etc.).
+- `app/routes/` : routes Flask par domaine fonctionnel.
+- `app/templates/` : vues HTML (auth, dashboard, etudiants, enseignants, notes, presences, emploi du temps, etc.).
+- `image/` : ressources d'images utilisees dans l'interface.
+- `app.py` : point d'entree local.
+- `wsgi.py` : point d'entree WSGI pour deploiement (Gunicorn).
+- `config.py` : configuration via variables d'environnement + connexion SQL Server.
+- `config.example.py` : exemple de configuration.
+- `requirements.txt` : dependances Python.
+- `Dockerfile` : conteneur de deploiement (Render).
+- `render.yaml` : configuration Render.
+- `DEPLOY_RENDER.md` : guide de deploiement Render + Azure SQL.
+- `.env.example` : exemple de variables d'environnement.
+
+## Prerequis
+- Python 3.10+
+- SQL Server (local ou Azure SQL)
 - ODBC Driver 18 for SQL Server
-- La base `PROJET_BDD2` déjà créée avec tes données
 
-### 2. Configurer la connexion (recommandé pour GitHub)
-Définir les variables d'environnement :
+## Installation locale
 ```bash
-SECRET_KEY="change-me"
-DB_DRIVER="ODBC Driver 18 for SQL Server"
-DB_SERVER=".\\PROJET_BDD2"
-DB_DATABASE="PROJET_BDD2"
-DB_USER="sa"                 # optionnel si Trusted_Connection
-DB_PASSWORD="TonMotDePasse!" # optionnel si Trusted_Connection
-DB_TRUST_CERT="yes"
+pip install -r requirements.txt
 ```
 
-> Tu peux utiliser `config.example.py` comme modèle.
+## Configuration
+Creer un fichier `.env` (ou definir les variables dans l'environnement systeme) :
 
-### 3. Installer les dépendances
-```bash
-pip install flask pyodbc openpyxl
+```env
+SECRET_KEY=replace-with-a-strong-secret
+ITEMS_PER_PAGE=10
+DB_DRIVER=ODBC Driver 18 for SQL Server
+DB_SERVER=your-server.database.windows.net
+DB_PORT=1433
+DB_DATABASE=PROJET_BDD2
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_ENCRYPT=yes
+DB_TRUST_CERT=no
+DB_TIMEOUT=30
 ```
 
-### 4. Lancer l'application
+## Lancement en local
 ```bash
 python app.py
 ```
 
-### 5. Ouvrir dans le navigateur
-```
-http://127.0.0.1:5000
-```
+Application accessible sur `http://127.0.0.1:5000`.
 
-### 6. Se connecter
-Utilise un **email + mot_de_passe** présent dans la table `Utilisateur` de ta base.
+## API interne de verification
+- `GET /health` : verifie que le service web est operationnel.
 
----
+## Deploiement
+Le projet est prepare pour un deploiement Docker sur Render avec base Azure SQL.
 
-## 🗂️ Structure du projet
+- URL de l'application : https://projet-bdd2.onrender.com/auth/login
+- Guide complet : `DEPLOY_RENDER.md`
+- Build/Run : `Dockerfile`
+- Config service Render : `render.yaml`
 
-```
-PORTAIL_BDD2/
-├── app.py                      ← Point d'entrée
-├── config.py                   ← ⚠️ À configurer
-├── requirements.txt
-└── app/
-    ├── __init__.py             ← Factory Flask
-    ├── models/
-    │   ├── auth.py             ← Authentification
-    │   ├── etudiant.py         ← CRUD étudiants
-    │   ├── enseignant.py       ← CRUD enseignants
-    │   ├── inscription.py      ← Inscriptions
-    │   ├── note.py             ← Notes & évaluations
-    │   └── presence.py         ← Séances & présences
-    ├── routes/
-    │   ├── auth.py             ← /auth/login, /auth/logout
-    │   ├── dashboard.py        ← /dashboard
-    │   ├── etudiants.py        ← /etudiants/*
-    │   ├── enseignants.py      ← /enseignants/*
-    │   ├── inscriptions.py     ← /inscriptions/*
-    │   ├── notes.py            ← /notes/*
-    │   ├── presences.py        ← /presences/*
-    │   └── seances.py          ← /seances/*
-    └── templates/
-        ├── base.html           ← Layout sombre (sidebar)
-        ├── auth/
-        ├── dashboard/
-        ├── etudiants/
-        ├── enseignants/
-        ├── inscriptions/
-        ├── notes/
-        ├── presences/
-        └── seances/
-```
+## Qualite et securite
+- Requetes SQL parametrees via `pyodbc`.
+- Separation claire models/routes/templates.
+- Variables sensibles externalisees via environnement.
 
-## ✨ Fonctionnalités
-
-| Module | Fonctionnalités |
-|--------|----------------|
-| **Étudiants** | Liste paginée, recherche, filtre filière, détail, CRUD, export Excel |
-| **Enseignants** | Liste paginée, recherche, détail (enseignements assignés), CRUD |
-| **Inscriptions** | Liste filtrée par classe/année, nouvelle inscription, suppression |
-| **Notes** | Liste filtrée, saisie note, suppression, relevé par étudiant avec moyenne/UE |
-| **Évaluations** | Créer une évaluation par matière et type |
-| **Présences** | Tableau des séances, feuille d'appel interactive, taux de présence |
-| **Séances** | Créer/supprimer une séance de cours |
-
-## 🔒 Sécurité
-- Sessions Flask chiffrées
-- Toutes les routes protégées par `@login_required`
-- Requêtes SQL paramétrées (protection injection SQL)
-
-## Deployment Render (Docker)
-- Files added:
-  - Dockerfile
-  - .dockerignore
-  - render.yaml
-  - .env.example
-  - DEPLOY_RENDER.md
-- Full guide: DEPLOY_RENDER.md
+## Licence
+Projet academique BDD2.
