@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
 import io
+import os
+from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from app.routes.auth import login_required, role_required
 from app.models.note import (
     get_notes, get_matieres, get_evaluations,
@@ -130,8 +132,13 @@ def releve_pdf(etudiant_id):
     styles = getSampleStyleSheet()
     story = []
 
-    title = f"Relevé de notes - {etudiant['nom']} {etudiant['prenom']}"
-    story.append(Paragraph(title, styles["Title"]))
+    logo_path = os.path.join(os.path.dirname(__file__), "..", "..", "image", "ensae.png")
+    if os.path.exists(logo_path):
+        story.append(Image(logo_path, width=80, height=80))
+        story.append(Spacer(1, 8))
+
+    story.append(Paragraph("Releves ENSAE", styles["Title"]))
+    story.append(Paragraph(f"Etudiant : {etudiant['nom']} {etudiant['prenom']}", styles["Normal"]))
     story.append(Paragraph(f"Matricule : {etudiant['matricule']}", styles["Normal"]))
     story.append(Spacer(1, 12))
 
@@ -166,6 +173,10 @@ def releve_pdf(etudiant_id):
             ]))
             story.append(table)
             story.append(Spacer(1, 12))
+
+    date_str = datetime.now().strftime("%d/%m/%Y")
+    story.append(Spacer(1, 18))
+    story.append(Paragraph(f"Dakar, {date_str}", styles["Normal"]))
 
     doc.build(story)
     buffer.seek(0)
