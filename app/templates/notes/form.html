@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Saisir une note{% endblock %}
+{% block page_title %}Saisir une note{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('notes.index') }}" class="btn btn-secondary btn-sm">← Retour</a>{% endblock %}
+{% block content %}
+<div style="max-width:540px"><div class="card">
+  <form method="POST">
+    <div class="form-group"><label class="form-label">Étudiant</label>
+      <select name="id_etudiant" class="form-input form-select" required>
+        <option value="">— Choisir —</option>{% for e in etudiants %}<option value="{{ e.id }}">{{ e.label }}</option>{% endfor %}</select></div>
+    <div class="form-group"><label class="form-label">Évaluation</label>
+      <select name="id_evaluation" class="form-input form-select" required>
+        <option value="">— Choisir —</option>{% for e in evaluations %}<option value="{{ e.id }}">{{ e.matiere }} — {{ e.type }} ({{ e.date }})</option>{% endfor %}</select></div>
+    <div class="form-group"><label class="form-label">Note (sur 20)</label>
+      <input class="form-input" type="number" name="note" step="0.01" min="0" max="20" placeholder="ex: 14.5" required>
+      <p class="form-hint">Valeur entre 0 et 20. Ex : 14.50</p></div>
+    <button type="submit" class="btn btn-primary">Enregistrer la note</button>
+  </form>
+</div></div>
+{% endblock %}

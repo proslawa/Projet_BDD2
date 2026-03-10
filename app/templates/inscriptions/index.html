@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Inscriptions{% endblock %}
+{% block page_title %}Inscriptions{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('inscriptions.ajouter') }}" class="btn btn-primary btn-sm">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvelle</a>
+{% endblock %}
+{% block content %}
+<form method="GET" class="filter-bar">
+  <input class="filter-input" name="search" value="{{ search }}" placeholder="Nom, prénom, matricule…">
+  <select name="classe_id" class="filter-select"><option value="">Toutes les classes</option>{% for c in classes %}<option value="{{ c.id }}" {% if classe_id|string==c.id|string %}selected{% endif %}>{{ c.label }}</option>{% endfor %}</select>
+  <select name="annee_id" class="filter-select"><option value="">Toutes les années</option>{% for a in annees %}<option value="{{ a.id }}" {% if annee_id|string==a.id|string %}selected{% endif %}>{{ a.label }}</option>{% endfor %}</select>
+  <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+  <span class="filter-count">{{ total }} résultat(s)</span>
+</form>
+<div class="tbl-wrap">
+  <table class="tbl">
+    <thead><tr><th>Matricule</th><th>Étudiant</th><th>Classe</th><th>Filière</th><th>Année</th><th>Date inscr.</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for i in inscriptions %}
+      <tr>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--blue)">{{ i.matricule }}</span></td>
+        <td style="color:var(--text);font-weight:500">{{ i.nom }} {{ i.prenom }}</td>
+        <td><span class="badge badge-teal">{{ i.classe }} ({{ i.niveau }})</span></td>
+        <td><span class="badge badge-neutral">{{ i.filiere }}</span></td>
+        <td><span class="badge badge-blue">{{ i.debut }}-{{ i.fin }}</span></td>
+        <td style="font-family:var(--mono);font-size:11px">{{ i.date_insc.strftime('%d/%m/%Y') if i.date_insc else '—' }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('inscriptions.supprimer', inscription_id=i.id) }}" onsubmit="return confirm('Supprimer ?')">
+            <button class="btn btn-danger btn-sm">Suppr.</button></form>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:32px">Aucune inscription.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if total_pages > 1 %}
+<div class="pagination">
+  {% for p in range(1, total_pages+1) %}<a href="?page={{ p }}&search={{ search }}&classe_id={{ classe_id }}&annee_id={{ annee_id }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

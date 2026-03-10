@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Feuille d'appel{% endblock %}
+{% block page_title %}Feuille d'appel{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('presences.index') }}" class="btn btn-secondary btn-sm">← Retour</a>{% endblock %}
+{% block content %}
+<div class="card" style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+  <div>
+    <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--text)">{{ seance.matiere }}</div>
+    <div style="font-size:12px;color:var(--text3)">{{ seance.classe }} · {{ seance.enseignant }}</div>
+  </div>
+  <span class="badge badge-blue" style="font-size:13px">{{ seance.date.strftime('%d/%m/%Y') if seance.date else '—' }}</span>
+  <span class="badge badge-teal">{{ seance.debut }} – {{ seance.fin }}</span>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <button onclick="setAll(true)" class="btn btn-success btn-sm">Tous présents</button>
+    <button onclick="setAll(false)" class="btn btn-danger btn-sm">Tous absents</button>
+  </div>
+</div>
+
+<form method="POST">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:20px">
+    {% for p in presences %}
+    <div class="card" id="card-{{ p.id }}" style="display:flex;align-items:center;gap:14px;padding:12px 16px;cursor:pointer;transition:all .15s;{% if p.present %}border-color:rgba(16,217,136,.4){% endif %}" onclick="toggle({{ p.id }})">
+      <div id="dot-{{ p.id }}" style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:{% if p.present %}var(--green){% else %}rgba(255,255,255,.15){% endif %};transition:.15s"></div>
+      <div style="flex:1">
+        <div style="font-weight:600;color:var(--text);font-size:13px">{{ p.nom }} {{ p.prenom }}</div>
+        <div style="font-size:10px;font-family:var(--mono);color:var(--text3)">{{ p.matricule }}</div>
+      </div>
+      <input type="hidden" name="present_{{ p.id }}" id="inp-{{ p.id }}" value="{{ '1' if p.present else '0' }}">
+    </div>
+    {% else %}
+    <div style="color:var(--text3);font-size:13px">Aucun étudiant inscrit dans cette classe.</div>
+    {% endfor %}
+  </div>
+  {% if presences %}
+  <button type="submit" class="btn btn-primary">Enregistrer la présence</button>
+  {% endif %}
+</form>
+
+<script>
+function toggle(id) {
+  const inp = document.getElementById('inp-'+id);
+  const dot = document.getElementById('dot-'+id);
+  const card = document.getElementById('card-'+id);
+  const on = inp.value === '0';
+  inp.value = on ? '1' : '0';
+  dot.style.background = on ? 'var(--green)' : 'rgba(255,255,255,.15)';
+  card.style.borderColor = on ? 'rgba(16,217,136,.4)' : 'var(--border)';
+}
+function setAll(present) {
+  document.querySelectorAll('[id^="inp-"]').forEach(inp => {
+    const id = inp.id.replace('inp-', '');
+    const dot = document.getElementById('dot-'+id);
+    const card = document.getElementById('card-'+id);
+    inp.value = present ? '1' : '0';
+    dot.style.background = present ? 'var(--green)' : 'rgba(255,255,255,.15)';
+    card.style.borderColor = present ? 'rgba(16,217,136,.4)' : 'var(--border)';
+  });
+}
+</script>
+{% endblock %}

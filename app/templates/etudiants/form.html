@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} étudiant{% endblock %}
+{% block page_title %}{{ action }} un étudiant{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('etudiants.index') }}" class="btn btn-secondary btn-sm">← Retour</a>{% endblock %}
+{% block content %}
+<div style="max-width:540px">
+<div class="card">
+  <form method="POST">
+    <div class="form-group"><label class="form-label">Matricule</label>
+      <input class="form-input" name="matricule" value="{{ etudiant.matricule if etudiant else '' }}" required placeholder="ex: ISE2-2024-001"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Nom</label>
+        <input class="form-input" name="nom" value="{{ etudiant.nom if etudiant else '' }}" required></div>
+      <div class="form-group"><label class="form-label">Prénom</label>
+        <input class="form-input" name="prenom" value="{{ etudiant.prenom if etudiant else '' }}" required></div>
+    </div>
+    <div class="form-group"><label class="form-label">Date de naissance</label>
+      <input class="form-input" type="date" name="date_naissance" value="{{ etudiant.date_naissance.strftime('%Y-%m-%d') if etudiant and etudiant.date_naissance else '' }}" required></div>
+    <div class="form-group"><label class="form-label">Email</label>
+      <input class="form-input" type="email" name="email" value="{{ etudiant.email if etudiant else '' }}" required></div>
+    {% if not etudiant %}
+    <div class="form-group"><label class="form-label">Mot de passe</label>
+      <input class="form-input" type="password" name="mot_de_passe" required></div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">{{ action }} l'étudiant</button>
+  </form>
+</div>
+</div>
+{% endblock %}

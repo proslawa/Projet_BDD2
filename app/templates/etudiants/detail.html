@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ etudiant.nom }} {{ etudiant.prenom }}{% endblock %}
+{% block page_title %}Fiche étudiant{% endblock %}
+{% block topbar_actions %}
+  <a href="{{ url_for('notes.releve', etudiant_id=etudiant.id) }}" class="btn btn-secondary btn-sm">Relevé de notes</a>
+  {% if session.user_role == 'admin' %}
+  <a href="{{ url_for('etudiants.modifier', etudiant_id=etudiant.id) }}" class="btn btn-primary btn-sm">Modifier</a>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<div class="grid-2" style="margin-bottom:16px;align-items:start">
+  <div class="card">
+    <div class="section-head"><div class="section-title">Informations personnelles</div></div>
+    <div class="kv-row"><span class="kv-label">Matricule</span><span style="font-family:var(--mono);color:var(--blue)">{{ etudiant.matricule }}</span></div>
+    <div class="kv-row"><span class="kv-label">Nom complet</span><span style="color:var(--text);font-weight:600">{{ etudiant.nom }} {{ etudiant.prenom }}</span></div>
+    <div class="kv-row"><span class="kv-label">Date de naissance</span><span>{{ etudiant.date_naissance.strftime('%d/%m/%Y') if etudiant.date_naissance else '—' }}</span></div>
+    <div class="kv-row"><span class="kv-label">Email</span><span style="font-size:12px">{{ etudiant.email }}</span></div>
+    <div class="kv-row"><span class="kv-label">Rôle</span><span class="badge badge-green">{{ etudiant.role }}</span></div>
+  </div>
+  <div class="card">
+    <div class="section-head"><div class="section-title">Inscriptions</div></div>
+    {% for i in inscriptions %}
+    <div class="kv-row">
+      <div>
+        <div style="color:var(--text);font-weight:500;font-size:13px">{{ i.classe }} — {{ i.niveau }}</div>
+        <div style="font-size:11px;color:var(--text3)">{{ i.filiere }}</div>
+      </div>
+      <span class="badge badge-blue">{{ i.debut }}-{{ i.fin }}</span>
+    </div>
+    {% else %}<div style="color:var(--text3);font-size:13px">Aucune inscription.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="tbl-wrap">
+  <div style="padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between">
+    <div class="section-title">Notes</div>
+    <span class="badge badge-neutral">{{ notes|length }} note(s)</span>
+  </div>
+  <table class="tbl" style="margin-top:8px">
+    <thead><tr><th>UE</th><th>Matière</th><th>Type</th><th>Date</th><th>Note</th><th>Coeff.</th></tr></thead>
+    <tbody>
+      {% for n in notes %}
+      <tr>
+        <td><span class="badge badge-purple">{{ n.ue }}</span></td>
+        <td style="color:var(--text)">{{ n.matiere }}</td>
+        <td><span class="badge badge-blue">{{ n.type }}</span></td>
+        <td style="font-family:var(--mono);font-size:11px">{{ n.date.strftime('%d/%m/%Y') if n.date else '—' }}</td>
+        <td style="font-family:var(--mono);font-weight:700;color:{% if n.note and n.note>=10 %}var(--green){% elif n.note and n.note>=7 %}var(--amber){% else %}var(--red){% endif %}">
+          {{ '%.2f'|format(n.note) if n.note is not none else '—' }}
+        </td>
+        <td><span class="badge badge-neutral">×{{ n.coeff }}</span></td>
+      </tr>
+      {% else %}<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:24px">Aucune note.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

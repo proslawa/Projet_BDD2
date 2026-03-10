@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord — Admin{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
+{% block content %}
+<div style="margin-bottom:24px">
+  <div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.02em">Bienvenue, Admin</div>
+  <div style="font-size:13px;color:var(--text2);margin-top:4px">Connecte en tant qu'<span style="color:var(--blue);font-family:var(--mono)">admin</span></div>
+</div>
+
+<!-- Stat cards -->
+<div class="grid-4" style="margin-bottom:14px">
+  <div class="stat-card" style="--accent:var(--blue)">
+    <div class="stat-glow"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+    <div class="stat-label">Étudiants</div>
+    <div class="stat-num">{{ stats.etudiants }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--teal)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--teal),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 18c0-3 2.7-5 6-5s6 2 6 5"/><path d="M16 11l2 2 4-4"/></svg></div>
+    <div class="stat-label">Enseignants</div>
+    <div class="stat-num" style="color:var(--teal)">{{ stats.enseignants }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--purple)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--purple),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+    <div class="stat-label">Filières</div>
+    <div class="stat-num" style="color:var(--purple)">{{ stats.filieres }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--amber)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--amber),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+    <div class="stat-label">Classes</div>
+    <div class="stat-num" style="color:var(--amber)">{{ stats.classes }}</div>
+  </div>
+</div>
+<div class="grid-3" style="margin-bottom:28px">
+  <div class="stat-card" style="--accent:var(--green)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--green),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+    <div class="stat-label">Inscriptions</div>
+    <div class="stat-num" style="color:var(--green)">{{ stats.inscriptions }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--pink)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--pink),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="stat-label">Notes enregistrées</div>
+    <div class="stat-num" style="color:var(--pink)">{{ stats.notes }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--teal)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--teal),transparent 70%)"></div>
+    <div class="stat-icon-bg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+    <div class="stat-label">Séances de cours</div>
+    <div class="stat-num" style="color:var(--teal)">{{ stats.seances }}</div>
+  </div>
+</div>
+
+<!-- Charts row 1 -->
+<div class="grid-2" style="margin-bottom:14px">
+  <div class="chart-wrap">
+    <div class="chart-title">Distribution des notes</div>
+    <canvas id="chartDistrib" height="180"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Répartition par filière</div>
+    <canvas id="chartFiliere" height="180"></canvas>
+  </div>
+</div>
+
+<!-- Charts row 2 -->
+<div class="grid-2" style="margin-bottom:14px">
+  <div class="chart-wrap">
+    <div class="chart-title">Moyenne par matière (Top 8)</div>
+    <canvas id="chartMatiere" height="220"></canvas>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Taux de présence par classe</div>
+    <canvas id="chartPresence" height="220"></canvas>
+  </div>
+</div>
+
+<!-- Charts row 3 -->
+<div class="grid-2" style="margin-bottom:28px">
+  <div class="chart-wrap">
+    <div class="chart-title">Moyenne par type d'évaluation</div>
+    <canvas id="chartTypeEval" height="180"></canvas>
+  </div>
+  <div class="chart-wrap" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px">
+    <div style="font-family:var(--display);font-size:48px;font-weight:800;color:var(--blue)">{{ stats.moyenne }}</div>
+    <div style="font-size:13px;color:var(--text2)">Moyenne générale</div>
+    <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">sur 20 points · toutes matières</div>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<div class="section-head"><div class="section-title">Accès rapide</div></div>
+<div class="grid-4">
+  {% for href, label, desc, color in [
+    (url_for('etudiants.index'), 'Étudiants', 'Gérer les fiches, CRUD, export', 'var(--blue)'),
+    (url_for('inscriptions.ajouter'), 'Nouvelle inscription', 'Inscrire un étudiant en classe', 'var(--green)'),
+    (url_for('notes.saisir'), 'Saisir une note', 'Note par étudiant et évaluation', 'var(--amber)'),
+    (url_for('presences.index'), 'Présences', 'Feuilles d\'appel par séance', 'var(--teal)'),
+  ] %}
+  <a href="{{ href }}" class="card" style="text-decoration:none;display:block;cursor:pointer" onmouseover="this.style.borderColor='{{ color }}'" onmouseout="this.style.borderColor='var(--border)'">
+    <div style="width:32px;height:32px;background:{{ color }};opacity:.15;border-radius:8px;margin-bottom:12px"></div>
+    <div style="font-family:var(--display);font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px">{{ label }}</div>
+    <div style="font-size:12px;color:var(--text3)">{{ desc }}</div>
+  </a>
+  {% endfor %}
+</div>
+
+<script>
+Chart.defaults.color = '#475569';
+Chart.defaults.font.family = 'Calibri';
+const COLORS = ['#4f7cff','#8b5cf6','#10d988','#f59e0b','#06b6d4','#f43f5e','#ec4899','#a78bfa'];
+
+// Distribution
+const dd = {{ distrib_json|safe }};
+new Chart(document.getElementById('chartDistrib'), {
+  type: 'bar',
+  data: { labels: dd.labels, datasets: [{ data: dd.data, backgroundColor: COLORS, borderRadius: 6, borderSkipped: false }] },
+  options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(15,23,42,.08)' } }, y: { grid: { color: 'rgba(15,23,42,.08)' }, beginAtZero: true } } }
+});
+
+// Filière
+const pf = {{ par_filiere_json|safe }};
+new Chart(document.getElementById('chartFiliere'), {
+  type: 'doughnut',
+  data: { labels: pf.map(x=>x.filiere), datasets: [{ data: pf.map(x=>x.nb), backgroundColor: COLORS, borderWidth: 2, borderColor: '#ffffff' }] },
+  options: { cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 14 } } } }
+});
+
+// Matière (top 8)
+const pm = {{ par_matiere_json|safe }}.slice(0, 8);
+new Chart(document.getElementById('chartMatiere'), {
+  type: 'bar',
+  data: {
+    labels: pm.map(x => x.matiere.length > 14 ? x.matiere.substring(0,14)+'…' : x.matiere),
+    datasets: [{ data: pm.map(x=>x.moyenne), backgroundColor: '#4f7cff', borderRadius: 5, borderSkipped: false }]
+  },
+  options: { indexAxis: 'y', plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: 'rgba(15,23,42,.08)' }, max: 20, ticks: { stepSize: 5 } }, y: { grid: { color: 'rgba(15,23,42,.08)' } } } }
+});
+
+// Présence
+const pp = {{ par_classe_json|safe }};
+new Chart(document.getElementById('chartPresence'), {
+  type: 'bar',
+  data: {
+    labels: pp.map(x => x.classe.length > 12 ? x.classe.substring(0,12)+'…' : x.classe),
+    datasets: [{ data: pp.map(x=>x.taux), backgroundColor: pp.map(x => x.taux >= 75 ? '#10d988' : x.taux >= 50 ? '#f59e0b' : '#f43f5e'), borderRadius: 5, borderSkipped: false }]
+  },
+  options: { indexAxis: 'y', plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: 'rgba(15,23,42,.08)' }, max: 100, ticks: { callback: v => v + '%' } }, y: { grid: { color: 'rgba(15,23,42,.08)' } } } }
+});
+
+// Type eval
+const pt = {{ par_type_json|safe }};
+new Chart(document.getElementById('chartTypeEval'), {
+  type: 'radar',
+  data: { labels: pt.map(x=>x.type), datasets: [{ data: pt.map(x=>x.moyenne), backgroundColor: 'rgba(79,124,255,.15)', borderColor: '#4f7cff', pointBackgroundColor: '#4f7cff', borderWidth: 2, pointRadius: 4 }] },
+  options: { scales: { r: { grid: { color: 'rgba(15,23,42,.12)' }, angleLines: { color: 'rgba(15,23,42,.12)' }, pointLabels: { font: { size: 11 } }, max: 20, min: 0 } }, plugins: { legend: { display: false } } }
+});
+</script>
+{% endblock %}
+

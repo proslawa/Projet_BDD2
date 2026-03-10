@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ enseignant.nom }}{% endblock %}
+{% block page_title %}Fiche enseignant{% endblock %}
+{% block topbar_actions %}
+  {% if session.user_role == 'admin' %}
+  <a href="{{ url_for('enseignants.modifier', enseignant_id=enseignant.id) }}" class="btn btn-primary btn-sm">Modifier</a>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<div class="grid-2" style="align-items:start">
+  <div class="card">
+    <div class="section-head"><div class="section-title">Informations</div></div>
+    <div class="kv-row"><span class="kv-label">Nom complet</span><span style="font-weight:600;color:var(--text)">{{ enseignant.nom }} {{ enseignant.prenom }}</span></div>
+    <div class="kv-row"><span class="kv-label">Grade</span><span class="badge badge-purple">{{ enseignant.grade }}</span></div>
+    <div class="kv-row"><span class="kv-label">Email</span><span style="font-size:12px">{{ enseignant.email }}</span></div>
+  </div>
+  <div class="tbl-wrap">
+    <div style="padding:14px 16px 0"><div class="section-title">Enseignements ({{ enseignements|length }})</div></div>
+    <table class="tbl" style="margin-top:8px">
+      <thead><tr><th>Classe</th><th>Matière</th><th>UE</th><th>Coeff.</th></tr></thead>
+      <tbody>
+        {% for e in enseignements %}
+        <tr>
+          <td><span class="badge badge-blue">{{ e.classe }} — {{ e.niveau }}</span></td>
+          <td style="color:var(--text)">{{ e.matiere }}</td>
+          <td><span class="badge badge-teal">{{ e.ue }}</span></td>
+          <td><span class="badge badge-neutral">×{{ e.coeff }}</span></td>
+        </tr>
+        {% else %}<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:24px">Aucun enseignement.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Enseignants{% endblock %}
+{% block page_title %}Enseignants{% endblock %}
+{% block topbar_actions %}
+{% if session.user_role == 'admin' %}
+<a href="{{ url_for('enseignants.ajouter') }}" class="btn btn-primary btn-sm">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</a>
+{% endif %}
+{% endblock %}
+{% block content %}
+<form method="GET" class="filter-bar">
+  <input class="filter-input" name="search" value="{{ search }}" placeholder="Rechercher…">
+  <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+  <span class="filter-count">{{ total }} résultat(s)</span>
+</form>
+<div class="tbl-wrap">
+  <table class="tbl">
+    <thead><tr><th>Nom</th><th>Prénom</th><th>Grade</th><th>Email</th>{% if session.user_role=='admin' %}<th>Actions</th>{% endif %}</tr></thead>
+    <tbody>
+      {% for e in enseignants %}
+      <tr>
+        <td style="color:var(--text);font-weight:600">{{ e.nom }}</td>
+        <td>{{ e.prenom }}</td>
+        <td><span class="badge badge-purple">{{ e.grade }}</span></td>
+        <td style="font-size:12px">{{ e.email }}</td>
+        {% if session.user_role=='admin' %}
+        <td><div style="display:flex;gap:6px">
+          <a href="{{ url_for('enseignants.detail', enseignant_id=e.id) }}" class="btn btn-secondary btn-sm">Détail</a>
+          <a href="{{ url_for('enseignants.modifier', enseignant_id=e.id) }}" class="btn btn-secondary btn-sm">Modifier</a>
+          <form method="POST" action="{{ url_for('enseignants.supprimer', enseignant_id=e.id) }}" onsubmit="return confirm('Supprimer ?')">
+            <button class="btn btn-danger btn-sm">Suppr.</button></form>
+        </div></td>
+        {% endif %}
+      </tr>
+      {% else %}<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:32px">Aucun résultat.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if total_pages > 1 %}
+<div class="pagination">
+  {% for p in range(1, total_pages+1) %}<a href="?page={{ p }}&search={{ search }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

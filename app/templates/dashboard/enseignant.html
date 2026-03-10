@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Mon tableau de bord{% endblock %}
+{% block page_title %}Mon tableau de bord{% endblock %}
+{% block content %}
+<div style="margin-bottom:24px">
+  <div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.02em">Bienvenue, Enseignant</div>
+  <div style="font-size:13px;color:var(--text2);margin-top:4px">Connecte en tant qu'<span style="color:var(--purple);font-family:var(--mono)">enseignant</span></div>
+</div>
+
+<div class="grid-4" style="margin-bottom:28px">
+  <div class="stat-card" style="--accent:var(--blue)">
+    <div class="stat-glow"></div>
+    <div class="stat-label">Mes enseignements</div>
+    <div class="stat-num">{{ stats.nb_cours }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--teal)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--teal),transparent 70%)"></div>
+    <div class="stat-label">Séances dispensées</div>
+    <div class="stat-num" style="color:var(--teal)">{{ stats.nb_seances }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--green)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--green),transparent 70%)"></div>
+    <div class="stat-label">Moyenne de mes classes</div>
+    <div class="stat-num" style="color:var(--green)">{{ stats.moyenne_classe }}</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--purple)">
+    <div class="stat-glow" style="background:radial-gradient(circle,var(--purple),transparent 70%)"></div>
+    <div class="stat-label">Classes encadrées</div>
+    <div class="stat-num" style="color:var(--purple)">{{ stats.nb_classes }}</div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:28px">
+  <div class="chart-wrap">
+    <div class="chart-title">Moyennes par matière</div>
+    <canvas id="chartMatiere" height="220"></canvas>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="section-title">Accès rapide</div>
+    <a href="{{ url_for('emploi_temps.index') }}" class="card" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px">
+      <div style="width:36px;height:36px;background:rgba(139,92,246,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 14h.01M12 14h.01"/></svg></div>
+      <div><div style="font-weight:600;font-size:13px;color:var(--text)">Mon emploi du temps</div><div style="font-size:11px;color:var(--text3)">Mes cours de la semaine</div></div>
+    </a>
+    <a href="{{ url_for('presences.index') }}" class="card" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px">
+      <div style="width:36px;height:36px;background:rgba(16,217,136,.12);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M9 16l2 2 4-4"/></svg></div>
+      <div><div style="font-weight:600;font-size:13px;color:var(--text)">Feuilles de présence</div><div style="font-size:11px;color:var(--text3)">Gérer l'appel de mes séances</div></div>
+    </a>
+    <a href="{{ url_for('notes.saisir') }}" class="card" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:14px">
+      <div style="width:36px;height:36px;background:rgba(79,124,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div><div style="font-weight:600;font-size:13px;color:var(--text)">Saisir une note</div><div style="font-size:11px;color:var(--text3)">Enregistrer les résultats</div></div>
+    </a>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#475569';
+Chart.defaults.font.family = 'Calibri';
+const pm = {{ par_matiere_json|safe }}.slice(0, 10);
+new Chart(document.getElementById('chartMatiere'), {
+  type: 'bar',
+  data: {
+    labels: pm.map(x => x.matiere.length > 16 ? x.matiere.substring(0,16)+'…' : x.matiere),
+    datasets: [{ data: pm.map(x=>x.moyenne), backgroundColor: '#8b5cf6', borderRadius: 5, borderSkipped: false }]
+  },
+  options: { indexAxis: 'y', plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: 'rgba(15,23,42,.08)' }, max: 20, ticks: { stepSize: 5 } }, y: { grid: { color: 'rgba(15,23,42,.08)' } } } }
+});
+</script>
+{% endblock %}
+

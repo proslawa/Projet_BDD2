@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Nouvelle séance{% endblock %}
+{% block page_title %}Créer une séance{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('presences.index') }}" class="btn btn-secondary btn-sm">← Retour</a>{% endblock %}
+{% block content %}
+<div style="max-width:540px"><div class="card">
+  <form method="POST">
+    <div class="form-group"><label class="form-label">Enseignement</label>
+      <select name="id_enseignement" class="form-input form-select" required>
+        <option value="">— Choisir un enseignement —</option>
+        {% for e in enseignements %}<option value="{{ e.id }}">{{ e.label }}</option>{% endfor %}</select></div>
+    <div class="form-group"><label class="form-label">Date de la séance</label>
+      <input class="form-input" type="date" name="date_seance" required></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Heure de début</label>
+        <input class="form-input" type="time" name="heure_debut" required></div>
+      <div class="form-group"><label class="form-label">Heure de fin</label>
+        <input class="form-input" type="time" name="heure_fin" required></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Créer la séance</button>
+  </form>
+</div></div>
+{% endblock %}

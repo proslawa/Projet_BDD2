@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Vue d'ensemble{% endblock %}
+{% block page_title %}Vue d'ensemble{% endblock %}
+
+{% block content %}
+<div class="section-head" style="margin-bottom:20px">
+  <div>
+    <div class="section-title" style="font-size:15px">Tableau de bord</div>
+    <div class="section-sub">Base <span style="font-family:'Calibri',sans-serif;color:var(--blue)">PROJET_BDD2</span></div>
+  </div>
+</div>
+
+<div class="grid-4" style="margin-bottom:12px">
+  <div class="stat-card" style="--s-color:var(--blue)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+    <div class="stat-lbl">Étudiants</div>
+    <div class="stat-num">{{ stats.etudiants }}</div>
+  </div>
+  <div class="stat-card" style="--s-color:var(--teal)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 18c0-3 2.7-5 6-5s6 2 6 5"/><path d="M16 11l2 2 4-4"/></svg></div>
+    <div class="stat-lbl">Enseignants</div>
+    <div class="stat-num" style="color:var(--teal)">{{ stats.enseignants }}</div>
+  </div>
+  <div class="stat-card" style="--s-color:var(--violet)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+    <div class="stat-lbl">Filières</div>
+    <div class="stat-num" style="color:var(--violet)">{{ stats.filieres }}</div>
+  </div>
+  <div class="stat-card" style="--s-color:var(--amber)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+    <div class="stat-lbl">Classes</div>
+    <div class="stat-num" style="color:var(--amber)">{{ stats.classes }}</div>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-bottom:24px">
+  <div class="stat-card" style="--s-color:var(--green)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+    <div class="stat-lbl">Inscriptions</div>
+    <div class="stat-num" style="color:var(--green)">{{ stats.inscriptions }}</div>
+  </div>
+  <div class="stat-card" style="--s-color:var(--amber)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="stat-lbl">Notes enregistrées</div>
+    <div class="stat-num" style="color:var(--amber)">{{ stats.notes }}</div>
+  </div>
+  <div class="stat-card" style="--s-color:var(--teal)">
+    <div class="stat-bg-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+    <div class="stat-lbl">Séances de cours</div>
+    <div class="stat-num" style="color:var(--teal)">{{ stats.seances }}</div>
+  </div>
+</div>
+
+<div class="section-head"><div class="section-title">Accès rapide</div></div>
+<div class="grid-4">
+  {% set shortcuts = [
+    (url_for('etudiants.index'), 'Étudiants', 'Fiches, CRUD, export Excel', 'var(--blue)', 'M12 3L1 9l11 6 9-4.91V17h2V9L12 3z'),
+    (url_for('inscriptions.ajouter'), 'Nouvelle inscription', 'Inscrire un étudiant en classe', 'var(--green)', 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M12 12v4M10 14h4'),
+    (url_for('notes.saisir'), 'Saisir une note', 'Note par étudiant et évaluation', 'var(--amber)', 'M22 12 18 12 15 21 9 3 6 12 2 12'),
+    (url_for('presences.index'), 'Feuilles de présence', 'Appel par séance de cours', 'var(--teal)', 'M9 16l2 2 4-4 M3 4h18v18H3z')
+  ] %}
+  {% for href, title, desc, color, _ in shortcuts %}
+  <a href="{{ href }}" class="card" style="text-decoration:none;display:block;transition:border-color .15s,box-shadow .15s" onmouseover="this.style.borderColor='{{ color }}';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+    <div style="width:30px;height:30px;background:{{ color }};opacity:.12;border-radius:6px;margin-bottom:10px"></div>
+    <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:3px">{{ title }}</div>
+    <div style="font-size:12px;color:var(--text3)">{{ desc }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}
+

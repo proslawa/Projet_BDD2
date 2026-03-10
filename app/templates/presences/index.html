@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Présences{% endblock %}
+{% block page_title %}Feuilles de présence{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('seances.ajouter') }}" class="btn btn-primary btn-sm">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvelle séance</a>
+{% endblock %}
+{% block content %}
+<form method="GET" class="filter-bar">
+  <select name="enseignant_id" class="filter-select">
+    <option value="">Tous les enseignants</option>
+    {% for e in enseignants %}<option value="{{ e.id }}" {% if enseignant_id|string==e.id|string %}selected{% endif %}>{{ e.label }}</option>{% endfor %}</select>
+  <select name="classe_id" class="filter-select">
+    <option value="">Toutes les classes</option>
+    {% for c in classes %}<option value="{{ c.id }}" {% if classe_id|string==c.id|string %}selected{% endif %}>{{ c.label }}</option>{% endfor %}</select>
+  <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+  <span class="filter-count">{{ total }} séance(s)</span>
+</form>
+
+<div class="tbl-wrap">
+  <table class="tbl">
+    <thead><tr><th>Date</th><th>Horaire</th><th>Matière</th><th>Classe</th><th>Enseignant</th><th>Présents</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for s in seances %}
+      <tr>
+        <td><span class="badge badge-neutral">{{ s.date.strftime('%d/%m/%Y') if s.date else '—' }}</span></td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--blue)">{{ s.debut }} – {{ s.fin }}</td>
+        <td style="color:var(--text);font-weight:500">{{ s.matiere }}</td>
+        <td><span class="badge badge-teal">{{ s.classe }} ({{ s.niveau }})</span></td>
+        <td>{{ s.enseignant }}</td>
+        <td>
+          {% if s.nb_total > 0 %}
+          {% set pct = (s.nb_presents / s.nb_total * 100)|int %}
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:60px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:{{ pct }}%;background:{% if pct>=75 %}var(--green){% elif pct>=50 %}var(--amber){% else %}var(--red){% endif %};border-radius:3px"></div>
+            </div>
+            <span style="font-family:var(--mono);font-size:11px;color:{% if pct>=75 %}var(--green){% elif pct>=50 %}var(--amber){% else %}var(--red){% endif %}">{{ s.nb_presents }}/{{ s.nb_total }}</span>
+          </div>
+          {% else %}<span style="color:var(--text3);font-size:12px">Non rempli</span>{% endif %}
+        </td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <a href="{{ url_for('presences.feuille', seance_id=s.id) }}" class="btn btn-primary btn-sm">Appel</a>
+            {% if session.user_role == 'admin' %}
+            <form method="POST" action="{{ url_for('seances.supprimer', seance_id=s.id) }}" onsubmit="return confirm('Supprimer ?')">
+              <button class="btn btn-danger btn-sm">Suppr.</button></form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:32px">Aucune séance.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if total_pages > 1 %}
+<div class="pagination">
+  {% for p in range(1, total_pages+1) %}<a href="?page={{ p }}&enseignant_id={{ enseignant_id }}&classe_id={{ classe_id }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

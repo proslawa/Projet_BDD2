@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Étudiants{% endblock %}
+{% block page_title %}Étudiants{% endblock %}
+{% block topbar_actions %}
+{% if session.user_role == 'admin' %}
+<a href="{{ url_for('etudiants.export_excel') }}" class="btn btn-secondary btn-sm">
+  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Export Excel
+</a>
+<a href="{{ url_for('etudiants.ajouter') }}" class="btn btn-primary btn-sm">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  Ajouter
+</a>
+{% endif %}
+{% endblock %}
+{% block content %}
+<form method="GET" class="filter-bar">
+  <input class="filter-input" name="search" value="{{ search }}" placeholder="Rechercher nom, prénom, matricule…">
+  <select name="filiere_id" class="filter-select">
+    <option value="">Toutes les filières</option>
+    {% for f in filieres %}<option value="{{ f.id }}" {% if filiere_id|string==f.id|string %}selected{% endif %}>{{ f.nom }}</option>{% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+  {% if search or filiere_id %}<a href="{{ url_for('etudiants.index') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>{% endif %}
+  <span class="filter-count">{{ total }} résultat(s)</span>
+</form>
+
+<div class="tbl-wrap">
+  <table class="tbl">
+    <thead><tr>
+      <th>Matricule</th><th>Nom & Prénom</th><th>Email</th><th>Classe</th><th>Date naissance</th>
+      {% if session.user_role == 'admin' %}<th>Actions</th>{% endif %}
+    </tr></thead>
+    <tbody>
+      {% for e in etudiants %}
+      <tr>
+        <td><span style="font-family:var(--mono);font-size:11px;color:var(--blue)">{{ e.matricule }}</span></td>
+        <td>
+          <div style="font-weight:600;color:var(--text)">{{ e.nom }} {{ e.prenom }}</div>
+        </td>
+        <td style="font-size:12px">{{ e.email }}</td>
+        <td><span class="badge badge-teal">{{ e.classe }}</span></td>
+        <td style="font-size:12px;font-family:var(--mono)">{{ e.date_naissance.strftime('%d/%m/%Y') if e.date_naissance else '—' }}</td>
+        {% if session.user_role == 'admin' %}
+        <td>
+          <div style="display:flex;gap:6px">
+            <a href="{{ url_for('etudiants.detail', etudiant_id=e.id) }}" class="btn btn-secondary btn-sm">Détail</a>
+            <a href="{{ url_for('etudiants.modifier', etudiant_id=e.id) }}" class="btn btn-secondary btn-sm">Modifier</a>
+            <form method="POST" action="{{ url_for('etudiants.supprimer', etudiant_id=e.id) }}" onsubmit="return confirm('Supprimer ?')">
+              <button type="submit" class="btn btn-danger btn-sm">Suppr.</button>
+            </form>
+          </div>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:32px">Aucun résultat.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if total_pages > 1 %}
+<div class="pagination">
+  {% for p in range(1, total_pages+1) %}
+  <a href="?page={{ p }}&search={{ search }}&filiere_id={{ filiere_id }}" class="page-btn {% if p==page %}active{% endif %}">{{ p }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
