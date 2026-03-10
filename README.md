@@ -7,6 +7,10 @@ Application en ligne : https://projet-bdd2.onrender.com/auth/login
 
 ## Auteur
 - Lawa Foumsou PROSPER
+- Ameth FAYE
+- Tamsir NDONG
+- Bashir COMPAORE
+- Haba FROMO
 
 ## Objectifs
 - Centraliser la gestion academique dans une seule application.
