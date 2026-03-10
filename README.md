@@ -39,6 +39,7 @@ Application en ligne : https://projet-bdd2.onrender.com/auth/login
 - Gestion des enseignants (liste, detail, CRUD).
 - Gestion des inscriptions.
 - Saisie, consultation et releves de notes.
+- Export PDF des releves de notes (admin).
 - Gestion des seances et feuilles de presence.
 - Consultation de l'emploi du temps.
 
