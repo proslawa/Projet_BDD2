@@ -12,7 +12,7 @@ from app.models.note import (
     upsert_note, delete_note,
     create_evaluation, get_releve_notes,
 )
-from app.models.inscription import get_etudiants_liste
+from app.models.inscription import get_etudiants_liste, get_etudiants_liste_releves
 
 notes_bp = Blueprint("notes", __name__, url_prefix="/notes")
 
@@ -112,7 +112,7 @@ def releve(etudiant_id):
 @notes_bp.route("/releves")
 @role_required("admin")
 def releves():
-    etudiants = get_etudiants_liste()
+    etudiants = get_etudiants_liste_releves()
     return render_template("notes/releves.html", etudiants=etudiants)
 
 

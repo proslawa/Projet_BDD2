@@ -58,6 +58,24 @@ def get_etudiants_liste():
     return [{"id": r[0], "label": f"{r[2]} {r[3]} ({r[1]})"} for r in rows]
 
 
+def get_etudiants_liste_releves():
+    conn = get_connection(); cur = conn.cursor()
+    cur.execute("""
+        SELECT e.idEtudiant, e.matricule, e.nom, e.prenom, c.nom_classe
+        FROM Etudiant e
+        OUTER APPLY (
+            SELECT TOP 1 i.idClasse
+            FROM Inscription i
+            WHERE i.idEtudiant = e.idEtudiant
+            ORDER BY i.date_inscription DESC
+        ) i
+        LEFT JOIN Classe c ON c.idClasse = i.idClasse
+        ORDER BY e.nom, e.prenom
+    """)
+    rows = cur.fetchall(); conn.close()
+    return [{"id": r[0], "label": f"{r[2]} {r[3]} ({r[1]})", "classe": r[4]} for r in rows]
+
+
 def get_classes_liste():
     conn = get_connection(); cur = conn.cursor()
     cur.execute("""

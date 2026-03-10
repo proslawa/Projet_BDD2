@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Releves{% endblock %}
+{% block page_title %}Releves de notes{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('notes.index') }}" class="btn btn-secondary btn-sm">Retour notes</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">Selectionner un etudiant</div>
+  <div class="card-body p-0">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Etudiant</th>
+            <th>Classe</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in etudiants %}
+          <tr>
+            <td>{{ e.label }}</td>
+            <td>{{ e.classe if e.classe else '-' }}</td>
+            <td>
+              <a class="btn btn-primary btn-sm" href="{{ url_for('notes.releve', etudiant_id=e.id) }}">Voir releve</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3">Aucun etudiant.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
