@@ -10,16 +10,19 @@ Application web Flask connectée à la base `PROJET_BDD2` sur MS SQL Server.
 - ODBC Driver 18 for SQL Server
 - La base `PROJET_BDD2` déjà créée avec tes données
 
-### 2. Configurer la connexion
-Ouvrir `config.py` et renseigner tes identifiants :
-```python
-DB_CONFIG = {
-    "server":   "localhost",       # ou "." ou "NOM_PC"
-    "database": "PROJET_BDD2",     # nom exact de ta base
-    "uid":      "sa",              # ton login SQL
-    "pwd":      "TonMotDePasse!",  # ton mot de passe SA
-}
+### 2. Configurer la connexion (recommandé pour GitHub)
+Définir les variables d'environnement :
+```bash
+SECRET_KEY="change-me"
+DB_DRIVER="ODBC Driver 18 for SQL Server"
+DB_SERVER=".\\PROJET_BDD2"
+DB_DATABASE="PROJET_BDD2"
+DB_USER="sa"                 # optionnel si Trusted_Connection
+DB_PASSWORD="TonMotDePasse!" # optionnel si Trusted_Connection
+DB_TRUST_CERT="yes"
 ```
+
+> Tu peux utiliser `config.example.py` comme modèle.
 
 ### 3. Installer les dépendances
 ```bash
