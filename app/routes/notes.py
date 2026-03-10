@@ -1,5 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app.routes.auth import login_required
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from app.routes.auth import login_required, role_required
 from app.models.note import (
     get_notes, get_matieres, get_evaluations,
     upsert_note, delete_note,
@@ -100,3 +105,69 @@ def releve(etudiant_id):
         return redirect(url_for("notes.index"))
     releve_data = get_releve_notes(etudiant_id)
     return render_template("notes/releve.html", etudiant=etudiant, releve=releve_data)
+
+
+@notes_bp.route("/releves")
+@role_required("admin")
+def releves():
+    etudiants = get_etudiants_liste()
+    return render_template("notes/releves.html", etudiants=etudiants)
+
+
+@notes_bp.route("/releve/<int:etudiant_id>/pdf")
+@role_required("admin")
+def releve_pdf(etudiant_id):
+    from app.models.etudiant import get_etudiant_by_id
+    etudiant = get_etudiant_by_id(etudiant_id)
+    if not etudiant:
+        flash("Étudiant introuvable.", "danger")
+        return redirect(url_for("notes.releves"))
+
+    releve_data = get_releve_notes(etudiant_id)
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+    styles = getSampleStyleSheet()
+    story = []
+
+    title = f"Relevé de notes - {etudiant['nom']} {etudiant['prenom']}"
+    story.append(Paragraph(title, styles["Title"]))
+    story.append(Paragraph(f"Matricule : {etudiant['matricule']}", styles["Normal"]))
+    story.append(Spacer(1, 12))
+
+    if not releve_data:
+        story.append(Paragraph("Aucune note enregistrée pour cet étudiant.", styles["Normal"]))
+    else:
+        for ue in releve_data:
+            story.append(Paragraph(f"UE : {ue['ue']} — {ue['credit']} crédit(s)", styles["Heading3"]))
+
+            data = [["Matière", "Coeff.", "Moyenne matière", "Appréciation"]]
+            for m in ue["matieres"]:
+                moyenne = m["moyenne"]
+                if moyenne >= 16:
+                    appr = "Très Bien"
+                elif moyenne >= 14:
+                    appr = "Bien"
+                elif moyenne >= 12:
+                    appr = "Assez Bien"
+                elif moyenne >= 10:
+                    appr = "Passable"
+                else:
+                    appr = "Insuffisant"
+
+                data.append([m["nom"], str(m["coeff"]), f"{moyenne:.2f}", appr])
+
+            table = Table(data, hAlign="LEFT", colWidths=[220, 60, 90, 120])
+            table.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("ALIGN", (1, 1), (2, -1), "CENTER"),
+            ]))
+            story.append(table)
+            story.append(Spacer(1, 12))
+
+    doc.build(story)
+    buffer.seek(0)
+    filename = f"releve_{etudiant['matricule']}.pdf"
+    return send_file(buffer, mimetype="application/pdf", as_attachment=True, download_name=filename)

@@ -1,7 +1,12 @@
-{% extends "base.html" %}
-{% block title %}Relevé — {{ etudiant.nom }}{% endblock %}
-{% block page_title %}Relevé de notes{% endblock %}
-{% block topbar_actions %}<a href="{{ url_for('etudiants.detail', etudiant_id=etudiant.id) }}" class="btn btn-secondary btn-sm">← Fiche étudiant</a>{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Releve - {{ etudiant.nom }}{% endblock %}
+{% block page_title %}Releve de notes{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('etudiants.detail', etudiant_id=etudiant.id) }}" class="btn btn-secondary btn-sm">← Fiche etudiant</a>
+{% if session.user_role == 'admin' %}
+<a href="{{ url_for('notes.releve_pdf', etudiant_id=etudiant.id) }}" class="btn btn-primary btn-sm">Telecharger PDF</a>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
   <div>
@@ -13,7 +18,7 @@
   {% set moy_globale = (releve|sum(attribute='moyenne') / releve|length)|round(2) if releve else 0 %}
   <div style="text-align:right">
     <div style="font-family:var(--display);font-size:28px;font-weight:800;color:{% if moy_globale>=10 %}var(--green){% elif moy_globale>=7 %}var(--amber){% else %}var(--red){% endif %}">{{ moy_globale }}</div>
-    <div style="font-size:11px;color:var(--text3)">Moyenne indicative · {{ total_credits }} crédits</div>
+    <div style="font-size:11px;color:var(--text3)">Moyenne indicative · {{ total_credits }} credits</div>
   </div>
   {% endif %}
 </div>
@@ -23,7 +28,7 @@
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div style="display:flex;align-items:center;gap:10px">
       <span class="badge badge-purple" style="font-size:12px">{{ ue.ue }}</span>
-      <span class="badge badge-neutral">{{ ue.credit }} crédit(s)</span>
+      <span class="badge badge-neutral">{{ ue.credit }} credit(s)</span>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <span style="font-size:11px;color:var(--text3)">Moyenne UE</span>
@@ -31,7 +36,7 @@
     </div>
   </div>
   <table class="tbl" style="background:transparent">
-    <thead><tr><th>Matière</th><th>Coeff.</th><th>Moyenne matière</th><th>Appréciation</th></tr></thead>
+    <thead><tr><th>Matiere</th><th>Coeff.</th><th>Moyenne matiere</th><th>Appreciation</th></tr></thead>
     <tbody>
       {% for m in ue.matieres %}
       <tr>
@@ -39,7 +44,7 @@
         <td><span class="badge badge-neutral">×{{ m.coeff }}</span></td>
         <td style="font-family:var(--mono);font-weight:700;font-size:15px;color:{% if m.moyenne>=10 %}var(--green){% elif m.moyenne>=7 %}var(--amber){% else %}var(--red){% endif %}">{{ m.moyenne }}</td>
         <td>
-          {% if m.moyenne >= 16 %}<span class="badge badge-green">Très Bien</span>
+          {% if m.moyenne >= 16 %}<span class="badge badge-green">Tres Bien</span>
           {% elif m.moyenne >= 14 %}<span class="badge badge-teal">Bien</span>
           {% elif m.moyenne >= 12 %}<span class="badge badge-blue">Assez Bien</span>
           {% elif m.moyenne >= 10 %}<span class="badge badge-neutral">Passable</span>
@@ -52,6 +57,6 @@
   </table>
 </div>
 {% else %}
-<div class="card" style="text-align:center;padding:48px;color:var(--text3)">Aucune note enregistrée pour cet étudiant.</div>
+<div class="card" style="text-align:center;padding:48px;color:var(--text3)">Aucune note enregistree pour cet etudiant.</div>
 {% endfor %}
 {% endblock %}
