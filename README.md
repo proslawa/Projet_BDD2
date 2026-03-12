@@ -18,14 +18,14 @@ Application en ligne : https://projet-bdd2.onrender.com/auth/login
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 ## Auteur
-- Lawa Foumsou PROSPER
+- Lawa FOUMSOU 
 - Ameth FAYE
 - Tamsir NDONG
 - Bashir COMPAORE
 - Haba FROMO
 
 ## Superviseur
-- Prof. Saliou Thiaw
+- Prof. Saliou THIAW
 
 ## Objectifs
 - Centraliser la gestion academique dans une seule application.
